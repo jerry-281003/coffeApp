@@ -1,8 +1,8 @@
 namespace coffeApp
 {
-    public partial class Form1 : Form
+    public partial class UserForm : Form
     {
-        public Form1()
+        public UserForm()
         {
             InitializeComponent();
         }
@@ -97,6 +97,27 @@ namespace coffeApp
         private void pictureBox1_Click(object sender, EventArgs e)
         {
             sidebarTransition.Start();
+        }
+
+        private void Submenu1button_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            SubMenu1 subMenu1 = new SubMenu1();
+            subMenu1.Show();
+        }
+
+        private void Submenu2button_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            SubMenu2 subMenu2 = new SubMenu2();
+            subMenu2.Show();
+        }
+
+        private void Aboutbutton2_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            BusinessInformation businessInformation = new BusinessInformation();
+            businessInformation.Show();
         }
     }
 }

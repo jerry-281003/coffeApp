@@ -1,6 +1,6 @@
 ﻿namespace coffeApp
 {
-    partial class Form1
+    partial class UserForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UserForm));
             panel1 = new Panel();
             nightControlBox1 = new ReaLTaiizor.Controls.NightControlBox();
             Menulabel = new Label();
@@ -106,7 +106,7 @@
             Menulabel.Font = new Font("Segoe UI", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
             Menulabel.Location = new Point(131, 34);
             Menulabel.Name = "Menulabel";
-            Menulabel.Size = new Size(80, 31);
+            Menulabel.Size = new Size(96, 38);
             Menulabel.TabIndex = 1;
             Menulabel.Text = "MENU";
             Menulabel.Click += label1_Click;
@@ -247,6 +247,7 @@
             Submenu2button.TabIndex = 3;
             Submenu2button.Text = "Freeze";
             Submenu2button.UseVisualStyleBackColor = false;
+            Submenu2button.Click += Submenu2button_Click;
             // 
             // Aboutpanel2
             // 
@@ -272,6 +273,7 @@
             Aboutbutton2.Text = "            About";
             Aboutbutton2.TextAlign = ContentAlignment.MiddleLeft;
             Aboutbutton2.UseVisualStyleBackColor = false;
+            Aboutbutton2.Click += Aboutbutton2_Click;
             // 
             // Settingspanel
             // 
@@ -333,7 +335,7 @@
             sidebarTransition.Interval = 5;
             sidebarTransition.Tick += sidebarTransition_Tick;
             // 
-            // Form1
+            // UserForm
             // 
             AutoScaleMode = AutoScaleMode.None;
             ClientSize = new Size(1375, 714);
@@ -341,7 +343,7 @@
             Controls.Add(panel1);
             FormBorderStyle = FormBorderStyle.None;
             IsMdiContainer = true;
-            Name = "Form1";
+            Name = "UserForm";
             Text = "Form1";
             Load += Form1_Load;
             panel1.ResumeLayout(false);
