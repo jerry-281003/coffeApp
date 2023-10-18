@@ -1,6 +1,6 @@
 ﻿namespace coffeApp
 {
-    partial class UserForm
+    partial class UserForm : Form
     {
         /// <summary>
         ///  Required designer variable.
@@ -346,6 +346,7 @@
             Name = "UserForm";
             Text = "Form1";
             Load += Form1_Load;
+            Click += Submenu1button_Click;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)Hambutton).EndInit();

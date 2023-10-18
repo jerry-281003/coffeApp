@@ -1,3 +1,5 @@
+using coffeApp.Model;
+
 namespace coffeApp
 {
     public partial class UserForm : Form
@@ -5,6 +7,14 @@ namespace coffeApp
         public UserForm()
         {
             InitializeComponent();
+
+
+        }
+        public User user { get; set; }
+
+        public void SetDataFromLogin(User data)
+        {
+            user = data;
         }
         bool menuExpand = false;
 
@@ -101,21 +111,23 @@ namespace coffeApp
 
         private void Submenu1button_Click(object sender, EventArgs e)
         {
-            this.Hide();
+            this.Close();
             SubMenu1 subMenu1 = new SubMenu1();
+            subMenu1.SetDataFromLogin(user);
             subMenu1.Show();
         }
 
         private void Submenu2button_Click(object sender, EventArgs e)
         {
-            this.Hide();
+            this.Close();
             SubMenu2 subMenu2 = new SubMenu2();
+            subMenu2.SetDataFromLogin(user);
             subMenu2.Show();
         }
 
         private void Aboutbutton2_Click(object sender, EventArgs e)
         {
-            this.Hide();
+            this.Close();
             BusinessInformation businessInformation = new BusinessInformation();
             businessInformation.Show();
         }

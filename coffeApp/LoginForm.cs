@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using coffeApp.Model;
+using Microsoft.Data.SqlClient;
 
 
 namespace coffeApp
@@ -9,17 +10,50 @@ namespace coffeApp
         {
             InitializeComponent();
         }
-        string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=CafeManagemnt;User ID=sa;Password=123;";
+        string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=CafeData;User ID=sa;Password=123;";
 
-
-
-
-        private void btnLogin_Click(object sender, EventArgs e)
+        public User GetUserByUsernameAndPassword()
         {
             string username = txtUserNameLogin.Text;
             string password = txtPasswordLogin.Text;
-           
 
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                
+
+                string query = "SELECT UserId, Name, UserName, Point FROM [User] WHERE UserName = @Username AND Password = @Password";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Username", username);
+                    command.Parameters.AddWithValue("@Password", password);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            // User found, create a User object
+                            User user = new User
+                            {
+                                UserId = reader.GetInt32(0),
+                                Name = reader.GetString(1),
+                                UserName = reader.GetString(2),                             
+                                Point = reader.GetInt32(3)
+                            };
+                            return user;
+                        }
+                    }
+                }
+            }
+
+            return null; // User not found
+        }
+       
+    private void btnLogin_Click(object sender, EventArgs e)
+        {
+            string username = txtUserNameLogin.Text;
+            string password = txtPasswordLogin.Text;
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
@@ -31,9 +65,9 @@ namespace coffeApp
                     command.Parameters.AddWithValue("@Username", username);
                     command.Parameters.AddWithValue("@Password", password);
 
-                    String? userId = (String?)command.ExecuteScalar();
+                   int? userId = (int?)command.ExecuteScalar();
 
-                    if(userId!=null)
+                    if (userId != null)
                     {
                         // Check the user's role
                         string roleQuery = "SELECT R.Name FROM Role R " +
@@ -55,12 +89,13 @@ namespace coffeApp
                             {
                                 // Open the Customer form
                                 UserForm userForm = new UserForm();
+                                userForm.SetDataFromLogin(GetUserByUsernameAndPassword());
                                 userForm.Show();
                             }
                             else if (userRoles.Contains("Admin"))
                             {
                                 // Open the Admin form
-                                
+
                             }
                             else
                             {
