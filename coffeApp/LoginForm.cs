@@ -85,26 +85,25 @@ namespace coffeApp
                             }
                             roles.Close();
 
-                            if (userRoles.Contains("Customer"))
+                            if (userRoles.Contains("Branch stores"))
                             {
                                 // Open the Customer form
                                 UserForm userForm = new UserForm();
                                 userForm.SetDataFromLogin(GetUserByUsernameAndPassword());
                                 userForm.Show();
                             }
-                            else if (userRoles.Contains("Admin"))
+                            else if (userRoles.Contains("Manager"))
                             {
                                 // Open the Admin form
-
-                            }
+                                ManagementAll managementAll = new ManagementAll();
+								managementAll.Show();
+							}
                             else
                             {
                                 MessageBox.Show("User does not have a valid role.");
                             }
-                        }
-
-                        // Hide or close the login form
-                        this.Hide(); // or this.Close() if you want to close the login form
+                        }                      
+                        this.Hide(); 
                     }
                     else
                     {
