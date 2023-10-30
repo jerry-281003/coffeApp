@@ -36,7 +36,7 @@ namespace coffeApp
 
 				}
 			}
-		}		
+		}
 		public staff()
 		{
 			InitializeComponent();
@@ -48,15 +48,15 @@ namespace coffeApp
 			int RowDelete;
 			if (int.TryParse(NumberOrderComplete.Text, out RowDelete))
 			{
-				
+
 				DeleteRowsByDrinkOrderId(RowDelete);
 				NumberOrderComplete.Text = "";
-				MessageBox.Show("Complete Order"+ RowDelete);
+				MessageBox.Show("Complete Order" + RowDelete);
 			}
 			else
 			{
 				MessageBox.Show("It not a number. Plese enter a number");
-			}		
+			}
 		}
 
 		public Tuple<int, string, decimal> GetDrinkDetailsByOrderId(int drinkOrderId)
@@ -115,7 +115,7 @@ namespace coffeApp
 			List<DataGridViewRow> rowsToDelete = new List<DataGridViewRow>();
 
 			foreach (DataGridViewRow row in TableUserOrder.Rows)
-			{		
+			{
 				int columnIndex = TableUserOrder.Columns["Number"].Index;
 
 				if (row.Cells[columnIndex].Value != null && row.Cells[columnIndex].Value.ToString() == drinkOrderId.ToString())

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace coffeApp
 {
@@ -23,19 +24,52 @@ namespace coffeApp
 		public Management()
 		{
 			InitializeComponent();
-			inputStatus.Items.Add("present");
-			inputStatus.Items.Add("absent");
-			inputStatus.Items.Add("late");
+			AddItemsComboBox();
+
+
 		}
 		string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=CafeData;User ID=sa;Password=123;";
 
 		private void btnShowOrder_Click(object sender, EventArgs e)
 		{
-			List<Order> orders = new List<Order>();
-			orders = GetOrdersByUserId(user.UserId);
-			TableShowOrder.DataSource = orders;
-			TableShowOrder.Columns.Remove("PointUse");
-			TableShowOrder.Columns.Remove("Status");
+
+			DateTime time = inputTimeShowOrder.Value;
+			TableShowOrder.Columns.Clear();
+			string option = optionShowOrder.Text.ToString();
+			if (option != "option")
+			{
+				List<Order> orders = GetOrdersByUserId(user.UserId);
+				List<Order> filteredOrders = new List<Order>(); // Create a new list for filtered orders
+
+				if (option == "Date")
+				{
+					filteredOrders = orders.FindAll(order => order.DateTime.Date == time.Date
+						&& order.DateTime.Month == time.Month && order.DateTime.Year == time.Year);
+				}
+				else if (option == "Month")
+				{
+					filteredOrders = orders.FindAll(order => order.DateTime.Month == time.Month
+						&& order.DateTime.Year == time.Year);
+				}
+				else if (option == "Year")
+				{
+					filteredOrders = orders.FindAll(order => order.DateTime.Year == time.Year);
+				}
+				else if (option == "All table")
+				{
+					filteredOrders = GetOrdersByUserId(user.UserId);
+				}
+
+				TableShowOrder.DataSource = filteredOrders;
+				TableShowOrder.Columns.Remove("PointUse");
+				TableShowOrder.Columns.Remove("Status");
+				TableShowOrder.Columns[1].HeaderText = "StoreId";
+				TableShowOrder.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+			}
+			else
+			{
+				MessageBox.Show("Please choose an option to show orders.");
+			}
 		}
 		private void btnCalculateRevenue_Click(object sender, EventArgs e)
 		{
@@ -53,7 +87,8 @@ namespace coffeApp
 			List<Staff> staff = new List<Staff>();
 			staff = GetStaffByUserId(user.UserId);
 			TableShowStaff.DataSource = staff;
-			TableShowStaff.Columns.Remove("UserId");
+			TableShowStaff.Columns[4].HeaderText = "StoreId";
+			TableShowStaff.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 		}
 		private void ShowStaff_RowHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
 		{
@@ -66,18 +101,70 @@ namespace coffeApp
 		}
 		private void btnAddAtendance_Click(object sender, EventArgs e)
 		{
-			Attendance attendance = new Attendance();
-			attendance.DateTime = inputDateTime.Value.Date;
-			attendance.StaffId = int.Parse(inputStaffId.Text.ToString());
-			attendance.Status = inputStatus.Text.ToString();
-			CreateAttendance(attendance);
+			if (inputStatus.Text == "")
+			{
+				MessageBox.Show("Please choose status");
+			}
+			else
+			{
+				List<Attendance> attendanceList = GetAttendance();
+				List<Attendance> filteredAttendance = new List<Attendance>();
+				DateTime time = inputDateTime.Value;
+				filteredAttendance = attendanceList.FindAll(attendance => attendance.DateTime.Date == time.Date
+						&& attendance.DateTime.Month == time.Month && attendance.DateTime.Year == time.Year
+						&& attendance.StaffId == int.Parse(inputStaffId.Text.ToString()));
+				if (filteredAttendance.Count > 0)
+				{
+					MessageBox.Show("Duplicate attendance record for the same StaffId and date already exists.");
+				}
+				else
+				{
+					Attendance attendance = new Attendance();
+					attendance.DateTime = inputDateTime.Value;
+					attendance.StaffId = int.Parse(inputStaffId.Text.ToString());
+					attendance.Status = inputStatus.Text.ToString();
+					CreateAttendance(attendance);
+
+					MessageBox.Show("Add Attendance Success");
+				}
+			}
+
 		}
 		private void btnCalculateProfit_Click(object sender, EventArgs e)
 		{
 			decimal profit = CalculateProfitForUser(user.UserId);
 			labelProfit.Text = profit.ToString() + "VND";
 		}
+		private void btnShowAttendance_Click(object sender, EventArgs e)
+		{
 
+			DateTime time = inputTimeShowAttendance.Value;
+			TableShowStaff.Columns.Clear();
+			string option = optionShowAttendance.Text.ToString();
+			if (option != "option")
+			{
+				List<Attendance> attendanceList = GetAttendance();
+				List<Attendance> filteredAttendance = new List<Attendance>();
+
+				if (option == "Date")
+				{
+					filteredAttendance = attendanceList.FindAll(attendance => attendance.DateTime.Date == time.Date
+						&& attendance.DateTime.Month == time.Month && attendance.DateTime.Year == time.Year);
+				}
+				else if (option == "Month")
+				{
+					filteredAttendance = attendanceList.FindAll(attendance => attendance.DateTime.Month == time.Month
+						&& attendance.DateTime.Year == time.Year);
+				}
+
+				TableShowStaff.DataSource = filteredAttendance;
+				TableShowStaff.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+			}
+			else
+			{
+				MessageBox.Show("Please choose an option to show attendance.");
+			}
+		}
 		public List<Order> GetOrdersByUserId(int userId)
 		{
 			List<Order> orders = new List<Order>();
@@ -206,8 +293,51 @@ namespace coffeApp
 
 			return totalProfit;
 		}
+		public void AddItemsComboBox()
+		{
+			inputStatus.Items.Add("present");
+			inputStatus.Items.Add("absent");
+			inputStatus.Items.Add("late");
+			optionShowAttendance.Items.Add("Date");
+			optionShowAttendance.Items.Add("Month");
+			optionShowOrder.Items.Add("Date");
+			optionShowOrder.Items.Add("Month");
+			optionShowOrder.Items.Add("Year");
 
-		
+		}
+		public List<Attendance> GetAttendance()
+		{
+			List<Attendance> attendanceList = new List<Attendance>();
+
+			using (SqlConnection connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+
+				// Define your SQL query
+				string query = "SELECT AttendanceId, StaffId, Status, DateTime FROM Attendance";
+
+				using (SqlCommand command = new SqlCommand(query, connection))
+				using (SqlDataReader reader = command.ExecuteReader())
+				{
+					while (reader.Read())
+					{
+						Attendance attendance = new Attendance
+						{
+							AttendanceId = reader.GetInt32(0),
+							StaffId = reader.GetInt32(1),
+							Status = reader.GetString(2),
+							DateTime = reader.GetDateTime(3)
+						};
+
+						attendanceList.Add(attendance);
+					}
+				}
+			}
+
+			return attendanceList;
+		}
+
+
 	}
 
 }
